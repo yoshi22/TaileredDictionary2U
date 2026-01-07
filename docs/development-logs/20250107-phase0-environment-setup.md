@@ -210,6 +210,45 @@ if (isProtectedPath && !user) {
     └── seed.sql
 ```
 
+## ローカル開発環境セットアップ（追記）
+
+### Supabase CLIインストール
+```bash
+brew install supabase/tap/supabase
+# バージョン: 2.67.1
+```
+
+### ローカル環境起動
+```bash
+supabase start
+# → PostgreSQL, Auth, Studio, Mailpit等が起動
+```
+
+### 起動後の情報
+| サービス | URL |
+|---------|-----|
+| Project URL | http://127.0.0.1:54321 |
+| Studio | http://127.0.0.1:54323 |
+| Database | postgresql://postgres:postgres@127.0.0.1:54322/postgres |
+| Mailpit | http://127.0.0.1:54324 |
+
+### 環境変数設定
+`apps/web/.env.local` を作成し、ローカルSupabaseのキーを設定。
+
+### マイグレーション適用
+```bash
+supabase db reset
+# → 10マイグレーションすべて適用
+```
+
+### 作成されたテーブル
+- profiles, entitlements, decks, entries, srs_data, usage_logs, credit_transactions
+
+### 作成されたビュー
+- v_entries_with_srs, v_due_entries, v_user_stats
+
+---
+
 ## 次のステップ (Phase 1)
 
 1. **認証フロー実装**

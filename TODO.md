@@ -25,7 +25,11 @@
 - [x] パッケージ間の依存設定
 
 ### 0.4 Supabase セットアップ
-- [ ] Supabase プロジェクト作成 (※Supabaseダッシュボードで作成後にリンク)
+- [x] Supabase CLI インストール (v2.67.1)
+- [x] ローカル開発環境セットアップ (`supabase start`)
+- [x] ローカル環境変数設定 (`apps/web/.env.local`)
+- [x] マイグレーション適用済み (`supabase db reset`)
+- [ ] Supabase プロジェクト作成 (※本番用、Supabaseダッシュボードで作成後にリンク)
 - [x] supabase/ ディレクトリ作成
 - [x] 初期マイグレーション作成
   - [x] profiles テーブル
