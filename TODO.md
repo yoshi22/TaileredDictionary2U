@@ -1,64 +1,65 @@
 # TODO - TD2U 実装タスク
 
-## Phase 0: 環境構築・基盤（Week 1）
+## Phase 0: 環境構築・基盤（Week 1） ✅ 完了
 
 ### 0.1 リポジトリ・プロジェクト初期化
-- [ ] GitHub リポジトリ作成
-- [ ] Turborepo モノレポ初期化
-- [ ] pnpm-workspace.yaml 設定
-- [ ] turbo.json 設定
-- [ ] .gitignore 作成
-- [ ] .env.example 作成
+- [x] GitHub リポジトリ作成 (https://github.com/yoshi22/TaileredDictionary2U)
+- [x] Turborepo モノレポ初期化
+- [x] pnpm-workspace.yaml 設定
+- [x] turbo.json 設定
+- [x] .gitignore 作成
+- [x] .env.example 作成
 
 ### 0.2 Next.js セットアップ
-- [ ] apps/web/ に Next.js 14 (App Router) 初期化
-- [ ] TypeScript 設定 (strict mode)
-- [ ] Tailwind CSS 設定
-- [ ] ESLint + Prettier 設定
-- [ ] パスエイリアス設定 (@/)
+- [x] apps/web/ に Next.js 14 (App Router) 初期化
+- [x] TypeScript 設定 (strict mode)
+- [x] Tailwind CSS 設定
+- [x] ESLint + Prettier 設定
+- [x] パスエイリアス設定 (@/)
 
 ### 0.3 共有パッケージ作成
-- [ ] packages/shared-types/ 初期化
-- [ ] packages/shared-utils/ 初期化
-- [ ] packages/shared-srs/ 初期化
-- [ ] packages/shared-validations/ 初期化
-- [ ] パッケージ間の依存設定
+- [x] packages/shared-types/ 初期化
+- [x] packages/shared-utils/ 初期化
+- [x] packages/shared-srs/ 初期化 (SM-2アルゴリズム実装、13テストパス)
+- [x] packages/shared-validations/ 初期化
+- [x] パッケージ間の依存設定
 
 ### 0.4 Supabase セットアップ
-- [ ] Supabase プロジェクト作成
-- [ ] supabase/ ディレクトリ作成
-- [ ] 初期マイグレーション作成
-  - [ ] profiles テーブル
-  - [ ] entitlements テーブル
-  - [ ] decks テーブル
-  - [ ] entries テーブル
-  - [ ] srs_data テーブル
-  - [ ] usage_logs テーブル
-  - [ ] credit_transactions テーブル
-- [ ] RLS ポリシー設定
-- [ ] トリガー設定（ユーザー作成時のprofiles/entitlements/deck作成）
+- [ ] Supabase プロジェクト作成 (※Supabaseダッシュボードで作成後にリンク)
+- [x] supabase/ ディレクトリ作成
+- [x] 初期マイグレーション作成
+  - [x] profiles テーブル
+  - [x] entitlements テーブル
+  - [x] decks テーブル
+  - [x] entries テーブル
+  - [x] srs_data テーブル
+  - [x] usage_logs テーブル
+  - [x] credit_transactions テーブル
+- [x] RLS ポリシー設定
+- [x] トリガー設定（ユーザー作成時のprofiles/entitlements/deck作成）
 
 ### 0.5 認証設定
-- [ ] Supabase Auth 設定
-- [ ] Email/Password 認証有効化
-- [ ] Google OAuth 設定
-- [ ] 認証ヘルパー関数作成 (lib/supabase/)
+- [ ] Supabase Auth 設定 (※Supabaseプロジェクト作成後)
+- [ ] Email/Password 認証有効化 (※Supabaseプロジェクト作成後)
+- [ ] Google OAuth 設定 (※Supabaseプロジェクト作成後)
+- [x] 認証ヘルパー関数作成 (lib/supabase/)
 
 ### 0.6 デプロイ設定
-- [ ] Vercel プロジェクト作成
-- [ ] 環境変数設定
-- [ ] 自動デプロイ確認
+- [x] vercel.json 作成
+- [ ] Vercel プロジェクト作成 (※Vercelダッシュボードで連携)
+- [ ] 環境変数設定 (※Vercelダッシュボードで設定)
+- [ ] 自動デプロイ確認 (※Vercel連携後)
 
 ---
 
 ## Phase 1: Web MVP（Week 2-4）
 
 ### 1.1 基本レイアウト・ナビゲーション
-- [ ] app/layout.tsx（ルートレイアウト）
+- [x] app/layout.tsx（ルートレイアウト）
 - [ ] 共通 Header コンポーネント
 - [ ] 共通 Footer コンポーネント
 - [ ] 認証チェック Layout (authenticated)
-- [ ] middleware.ts（認証リダイレクト）
+- [x] middleware.ts（認証リダイレクト）
 
 ### 1.2 認証画面
 - [ ] /login ページ
@@ -93,11 +94,11 @@
 - [ ] API: POST /api/entries
 - [ ] API: PATCH /api/entries/[id]
 - [ ] API: DELETE /api/entries/[id]
-- [ ] Zod スキーマ (CreateEntrySchema, UpdateEntrySchema)
+- [x] Zod スキーマ (CreateEntrySchema, UpdateEntrySchema) - packages/shared-validations/
 
 ### 1.6 AI Enrichment 生成
-- [ ] prompts/enrichment.txt 作成
-- [ ] prompts/system.txt 作成
+- [x] prompts/enrichment.txt 作成
+- [x] prompts/system.txt 作成
 - [ ] lib/llm/types.ts（プロバイダ抽象化）
 - [ ] lib/llm/openai.ts（OpenAI実装）
 - [ ] lib/llm/utils.ts（プロンプト読み込み）
@@ -108,8 +109,8 @@
 - [ ] 生成失敗時のエラーハンドリング
 
 ### 1.7 SRS 復習
-- [ ] packages/shared-srs/calculator.ts（SM-2実装）
-- [ ] calculator.test.ts（単体テスト）
+- [x] packages/shared-srs/calculator.ts（SM-2実装）
+- [x] calculator.test.ts（単体テスト）13テストパス
 - [ ] /review ページ
 - [ ] ReviewCard コンポーネント（表/裏）
 - [ ] DifficultyButtons コンポーネント
