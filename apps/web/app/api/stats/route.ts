@@ -58,7 +58,7 @@ export async function GET() {
         due_entries: stats?.due_entries ?? 0,
         total_decks: stats?.total_decks ?? 0,
         reviews_today: reviewsToday ?? 0,
-        streak_days: stats?.streak_days ?? 0,
+        streak_days: 0,
         plan: {
           type: entitlement?.plan_type ?? 'free',
           generation_used: entitlement?.monthly_generation_used ?? 0,
