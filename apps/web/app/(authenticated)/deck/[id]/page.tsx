@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import useSWR from 'swr'
 import {
   Card,
@@ -16,10 +16,6 @@ import { EntryCard } from '@/components/entry'
 import { useDeck } from '@/hooks/useDeck'
 import type { EntryWithSrs } from '@td2u/shared-types'
 
-interface PageProps {
-  params: Promise<{ id: string }>
-}
-
 const entriesFetcher = async (url: string) => {
   const res = await fetch(url)
   if (!res.ok) throw new Error('Failed to fetch entries')
@@ -27,8 +23,9 @@ const entriesFetcher = async (url: string) => {
   return json.data || []
 }
 
-export default function DeckDetailPage({ params }: PageProps) {
-  const { id } = use(params)
+export default function DeckDetailPage() {
+  const params = useParams<{ id: string }>()
+  const id = params.id
   const router = useRouter()
   const { deck, loading, error, mutate: mutateDeck } = useDeck(id)
   const [editing, setEditing] = useState(false)

@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -17,12 +17,9 @@ import {
 } from '@/components/entry'
 import { useEntry } from '@/hooks/useEntry'
 
-interface PageProps {
-  params: Promise<{ id: string }>
-}
-
-export default function EntryDetailPage({ params }: PageProps) {
-  const { id } = use(params)
+export default function EntryDetailPage() {
+  const params = useParams<{ id: string }>()
+  const id = params.id
   const router = useRouter()
   const { entry, loading, error, mutate } = useEntry(id)
   const [generating, setGenerating] = useState(false)
