@@ -30,9 +30,10 @@ export default function Error({ error, reset }: ErrorProps) {
             Go Home
           </Button>
         </div>
-        {process.env.NODE_ENV === 'development' && error.message && (
+        {error.message && (
           <pre className="mt-8 p-4 bg-gray-100 rounded text-left text-sm text-red-600 overflow-auto max-w-lg mx-auto">
             {error.message}
+            {error.digest && `\n\nDigest: ${error.digest}`}
           </pre>
         )}
       </div>
