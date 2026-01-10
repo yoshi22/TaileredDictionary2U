@@ -13,32 +13,34 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^14.2.21",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@supabase/supabase-js": "^2.47.10",
     "@supabase/ssr": "^0.5.2",
-    "openai": "^4.77.0",
-    "stripe": "^17.4.0",
-    "zod": "^3.23.8",
-    "swr": "^2.2.5",
-    "react-hot-toast": "^2.4.1",
+    "@supabase/supabase-js": "^2.47.10",
+    "@td2u/shared-srs": "workspace:*",
     "@td2u/shared-types": "workspace:*",
     "@td2u/shared-utils": "workspace:*",
-    "@td2u/shared-srs": "workspace:*",
-    "@td2u/shared-validations": "workspace:*"
+    "@td2u/shared-validations": "workspace:*",
+    "clsx": "^2.1.1",
+    "next": "^14.2.21",
+    "openai": "^4.77.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1",
+    "stripe": "^17.4.0",
+    "swr": "^2.2.5",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
+    "@playwright/test": "^1.49.1",
     "@types/node": "^20.11.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "tailwindcss": "^3.4.17",
-    "postcss": "^8.4.33",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.2.21",
-    "vitest": "^2.1.8",
-    "@playwright/test": "^1.49.1"
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.8"
   }
 }

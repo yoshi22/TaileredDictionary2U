@@ -56,108 +56,117 @@
 
 ---
 
-## Phase 1: Web MVP（Week 2-4）
+## Phase 1: Web MVP（Week 2-4） ✅ 完了
 
 ### 1.1 基本レイアウト・ナビゲーション
 - [x] app/layout.tsx（ルートレイアウト）
-- [ ] 共通 Header コンポーネント
-- [ ] 共通 Footer コンポーネント
-- [ ] 認証チェック Layout (authenticated)
+- [x] 共通 Header コンポーネント
+- [x] 共通 Footer コンポーネント
+- [x] 認証チェック Layout (authenticated)
 - [x] middleware.ts（認証リダイレクト）
 
 ### 1.2 認証画面
-- [ ] /login ページ
-- [ ] /signup ページ
-- [ ] ログインフォームコンポーネント
-- [ ] サインアップフォームコンポーネント
-- [ ] OAuth ボタン（Google）
-- [ ] 認証エラーハンドリング
+- [x] /login ページ
+- [x] /signup ページ
+- [x] ログインフォームコンポーネント
+- [x] サインアップフォームコンポーネント
+- [x] OAuth ボタン（Google）
+- [x] 認証エラーハンドリング
 
 ### 1.3 ランディングページ
-- [ ] / ページ（未認証時）
-- [ ] Hero セクション
-- [ ] Features セクション
-- [ ] Pricing プレビューセクション
-- [ ] CTA ボタン
+- [x] / ページ（未認証時）
+- [x] Hero セクション
+- [x] Features セクション
+- [x] Pricing プレビューセクション
+- [x] CTA ボタン
 
 ### 1.4 ダッシュボード
-- [ ] /dashboard ページ
-- [ ] StatsCards コンポーネント（総Entry数、Due数等）
-- [ ] QuickActions コンポーネント
-- [ ] EntryList コンポーネント
-- [ ] ページネーション
+- [x] /dashboard ページ
+- [x] StatsCards コンポーネント（総Entry数、Due数等）
+- [x] QuickActions コンポーネント
+- [x] RecentEntries コンポーネント
+- [x] UsageCard コンポーネント
 
 ### 1.5 Entry CRUD
-- [ ] /entry/new ページ
-- [ ] /entry/[id] ページ
-- [ ] EntryForm コンポーネント
-- [ ] EntryCard コンポーネント
-- [ ] EnrichmentPreview コンポーネント
-- [ ] API: GET /api/entries
-- [ ] API: GET /api/entries/[id]
-- [ ] API: POST /api/entries
-- [ ] API: PATCH /api/entries/[id]
-- [ ] API: DELETE /api/entries/[id]
+- [x] /entry/new ページ
+- [x] /entry/[id] ページ
+- [x] /entry/[id]/edit ページ
+- [x] EntryForm コンポーネント
+- [x] EditEntryForm コンポーネント
+- [x] EntryCard コンポーネント
+- [x] EntryActions コンポーネント
+- [x] EnrichmentPreview コンポーネント
+- [x] SrsStatus コンポーネント
+- [x] DeckSelect コンポーネント
+- [x] API: GET /api/entries
+- [x] API: GET /api/entries/[id]
+- [x] API: POST /api/entries
+- [x] API: PATCH /api/entries/[id]
+- [x] API: DELETE /api/entries/[id]
 - [x] Zod スキーマ (CreateEntrySchema, UpdateEntrySchema) - packages/shared-validations/
 
 ### 1.6 AI Enrichment 生成
 - [x] prompts/enrichment.txt 作成
 - [x] prompts/system.txt 作成
-- [ ] lib/llm/types.ts（プロバイダ抽象化）
-- [ ] lib/llm/openai.ts（OpenAI実装）
-- [ ] lib/llm/utils.ts（プロンプト読み込み）
-- [ ] lib/llm/retry.ts（リトライロジック）
-- [ ] API: POST /api/enrichment
-- [ ] 使用量チェックロジック
-- [ ] AI生成中のローディングUI
-- [ ] 生成失敗時のエラーハンドリング
+- [x] lib/llm/types.ts（プロバイダ抽象化）
+- [x] lib/llm/openai.ts（OpenAI実装）
+- [x] lib/llm/utils.ts（プロンプト読み込み）
+- [x] lib/llm/retry.ts（リトライロジック）
+- [x] API: POST /api/enrichment
+- [x] 使用量チェックロジック
+- [x] AI生成中のローディングUI
+- [x] 生成失敗時のエラーハンドリング
 
 ### 1.7 SRS 復習
 - [x] packages/shared-srs/calculator.ts（SM-2実装）
 - [x] calculator.test.ts（単体テスト）13テストパス
-- [ ] /review ページ
-- [ ] ReviewCard コンポーネント（表/裏）
-- [ ] DifficultyButtons コンポーネント
-- [ ] SessionSummary コンポーネント
-- [ ] API: GET /api/review/due
-- [ ] API: POST /api/review/[id]
-- [ ] セッション内 "Again" 再表示ロジック
+- [x] /review ページ
+- [x] ReviewCard コンポーネント（表/裏）
+- [x] DifficultyButtons コンポーネント
+- [x] SessionProgress コンポーネント
+- [x] SessionSummary コンポーネント
+- [x] API: GET /api/review/due
+- [x] API: POST /api/review/[id]
+- [x] セッション内 "Again" 再表示ロジック
 
 ### 1.8 Deck 管理
-- [ ] /decks ページ
-- [ ] /deck/[id] ページ
-- [ ] DeckCard コンポーネント
-- [ ] DeckList コンポーネント
-- [ ] DeckForm コンポーネント
-- [ ] API: GET /api/decks
-- [ ] API: POST /api/decks
-- [ ] API: PATCH /api/decks/[id]
-- [ ] API: DELETE /api/decks/[id]
+- [x] /decks ページ
+- [x] /deck/[id] ページ
+- [x] DeckCard コンポーネント
+- [x] DeckList コンポーネント
+- [x] DeckForm コンポーネント
+- [x] CreateDeckModal コンポーネント
+- [x] API: GET /api/decks
+- [x] API: POST /api/decks
+- [x] API: PATCH /api/decks/[id]
+- [x] API: DELETE /api/decks/[id]
 
 ### 1.9 設定画面
-- [ ] /settings ページ
-- [ ] プロフィールセクション
-- [ ] プランセクション（使用量表示）
-- [ ] ログアウト機能
-- [ ] アカウント削除（確認ダイアログ）
+- [x] /settings ページ
+- [x] ProfileSection コンポーネント
+- [x] UsageSection コンポーネント
+- [x] PlanSection コンポーネント
+- [x] DangerZone コンポーネント
+- [x] ログアウト機能
+- [x] アカウント削除（確認ダイアログ）
 
 ### 1.10 使用量制限（Free）
-- [ ] lib/billing/entitlements.ts
-- [ ] checkGenerationEntitlement 関数
-- [ ] consumeGeneration 関数
-- [ ] 上限到達時のUI（アップグレード促進）
-- [ ] increment_generation_used RPC関数
+- [x] lib/billing/entitlements.ts
+- [x] checkGenerationEntitlement 関数
+- [x] consumeGeneration 関数
+- [x] 上限到達時のUI（アップグレード促進）
 
 ### 1.11 エラーハンドリング・ローディング
-- [ ] グローバルエラーバウンダリ
-- [ ] API エラーレスポンス統一
-- [ ] ローディングスケルトン
-- [ ] トースト通知（react-hot-toast等）
+- [x] グローバルエラーバウンダリ (app/error.tsx)
+- [x] API エラーレスポンス統一 (lib/api/errors.ts)
+- [x] ローディングスケルトン (components/ui/Skeleton.tsx)
+- [x] ローディング状態 (app/loading.tsx)
+- [x] 404ページ (app/not-found.tsx)
 
 ### 1.12 レスポンシブ対応
-- [ ] Mobile ブレークポイント対応
-- [ ] ハンバーガーメニュー
-- [ ] モバイルフレンドリーなカードレイアウト
+- [x] Mobile ブレークポイント対応 (Tailwind CSS)
+- [x] ハンバーガーメニュー (Header内)
+- [x] モバイルフレンドリーなカードレイアウト
 
 ---
 

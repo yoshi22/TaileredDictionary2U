@@ -1,0 +1,39 @@
+'use client'
+
+import useSWR from 'swr'
+import type { Deck } from '@td2u/shared-types'
+
+interface DeckWithCount extends Deck {
+  entry_count: number
+}
+
+interface UseDeckResult {
+  deck: DeckWithCount | null
+  loading: boolean
+  error: Error | null
+  mutate: () => void
+}
+
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || 'Failed to fetch deck')
+  }
+  const json = await res.json()
+  return json.data
+}
+
+export function useDeck(id: string | null): UseDeckResult {
+  const { data, error, isLoading, mutate } = useSWR<DeckWithCount>(
+    id ? `/api/decks/${id}` : null,
+    fetcher
+  )
+
+  return {
+    deck: data ?? null,
+    loading: isLoading,
+    error: error ?? null,
+    mutate,
+  }
+}
