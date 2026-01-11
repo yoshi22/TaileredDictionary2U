@@ -19,7 +19,7 @@ import { useEntry } from '@/hooks/useEntry'
 
 export default function EntryDetailPage() {
   const params = useParams<{ id: string }>()
-  const id = params.id
+  const id = typeof params.id === 'string' ? params.id : null
   const router = useRouter()
   const { entry, loading, error, mutate } = useEntry(id)
   const [generating, setGenerating] = useState(false)

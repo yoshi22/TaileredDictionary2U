@@ -25,7 +25,7 @@ const entriesFetcher = async (url: string) => {
 
 export default function DeckDetailPage() {
   const params = useParams<{ id: string }>()
-  const id = params.id
+  const id = typeof params.id === 'string' ? params.id : null
   const router = useRouter()
   const { deck, loading, error, mutate: mutateDeck } = useDeck(id)
   const [editing, setEditing] = useState(false)
