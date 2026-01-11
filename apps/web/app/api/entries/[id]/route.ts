@@ -10,7 +10,7 @@ import {
 import { UpdateEntrySchema } from '@td2u/shared-validations'
 
 interface RouteParams {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 /**
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     const { data: entry, error } = await supabase
       .from('entries')
@@ -93,7 +93,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     // リクエストボディをパース
     const body = await request.json()
@@ -209,7 +209,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     // 削除対象のEntryが存在し、ユーザーのものか確認
     const { data: existingEntry, error: fetchError } = await supabase

@@ -5,7 +5,7 @@ import { SubmitReviewSchema } from '@td2u/shared-validations'
 import { SrsCalculator } from '@td2u/shared-srs'
 
 interface RouteParams {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 /**
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     // Parse and validate request
     const body = await request.json()

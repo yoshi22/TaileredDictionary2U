@@ -10,7 +10,7 @@ import {
 import { UpdateDeckSchema } from '@td2u/shared-validations'
 
 interface RouteParams {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }
 
 /**
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     const { data: deck, error } = await supabase
       .from('decks')
@@ -55,7 +55,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     const body = await request.json()
     const result = UpdateDeckSchema.safeParse(body)
@@ -106,7 +106,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const user = await getAuthUser()
     const supabase = await createClient()
-    const { id } = await params
+    const { id } = params
 
     // Check if deck exists and belongs to user
     const { data: existingDeck, error: fetchError } = await supabase
