@@ -175,6 +175,26 @@ const fetcher = async (url: string) => {
 
 ---
 
+## 解決確認
+
+**ステータス:** 解決済み
+
+**確認日時:** 2026-01-11
+
+**確認内容:**
+- Vercel でキャッシュクリア再デプロイ実施
+- ダッシュボードの「Recent Entries」からエントリーをクリック
+- Entry 詳細ページが正常に表示されることを確認
+
+**根本原因:**
+複合的な問題であったが、主な原因は以下の通り：
+
+1. **Next.js バージョン不整合** - コードベースに Next.js 15 のパターン（`use(params)`, `await params`）が混在していた
+2. **型安全性の欠如** - `useParams()` の戻り値が `undefined` になる可能性を考慮していなかった
+3. **フェッチャーのエラーハンドリング** - 非 JSON レスポンスに対応していなかった
+
+---
+
 ## 参考リンク
 
 - [Next.js 14 Dynamic Routes](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes)
