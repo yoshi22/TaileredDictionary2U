@@ -1,20 +1,11 @@
-import fs from 'fs'
-import path from 'path'
 import type { EnrichmentInput } from './types'
-
-/**
- * Load prompt template from file
- */
-export function loadPromptTemplate(templateName: string): string {
-  const promptPath = path.join(process.cwd(), 'prompts', `${templateName}.txt`)
-  return fs.readFileSync(promptPath, 'utf-8')
-}
+import { getPromptTemplate } from './prompts'
 
 /**
  * Build enrichment prompt from template and input
  */
 export function buildEnrichmentPrompt(input: EnrichmentInput): string {
-  const template = loadPromptTemplate('enrichment')
+  const template = getPromptTemplate('enrichment')
 
   let prompt = template.replace('{{term}}', input.term)
 

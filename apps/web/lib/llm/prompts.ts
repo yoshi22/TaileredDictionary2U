@@ -1,4 +1,13 @@
-You are a language learning assistant that helps users understand and memorize new terms.
+/**
+ * Embedded prompt templates
+ * These are embedded directly in code to avoid file system operations
+ * which don't work reliably in serverless environments (Vercel)
+ */
+
+export const PROMPTS = {
+  system: `You are a precise language learning assistant. You MUST respond with valid JSON only. No markdown, no explanations, just the JSON object.`,
+
+  enrichment: `You are a language learning assistant that helps users understand and memorize new terms.
 
 Given a TERM and optional CONTEXT, generate educational content in the following JSON format.
 
@@ -15,7 +24,7 @@ Given a TERM and optional CONTEXT, generate educational content in the following
 {
   "translation_ja": "Japanese translation of the term",
   "translation_en": "English translation of the term",
-  "summary": "Line 1 explaining what it is.\nLine 2 explaining why it matters.\nLine 3 explaining how it's used.",
+  "summary": "Line 1 explaining what it is.\\nLine 2 explaining why it matters.\\nLine 3 explaining how it's used.",
   "examples": [
     "Example sentence 1 in English or Japanese",
     "Example sentence 2",
@@ -41,4 +50,14 @@ TERM: {{term}}
 CONTEXT: {{context}}
 {{/if}}
 
-Generate the JSON response:
+Generate the JSON response:`,
+} as const
+
+export type PromptName = keyof typeof PROMPTS
+
+/**
+ * Get a prompt template by name
+ */
+export function getPromptTemplate(name: PromptName): string {
+  return PROMPTS[name]
+}
