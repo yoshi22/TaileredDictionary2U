@@ -16,11 +16,19 @@ interface UseDeckResult {
 
 const fetcher = async (url: string) => {
   const res = await fetch(url)
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message || 'Failed to fetch deck')
+  const text = await res.text()
+
+  let json
+  try {
+    json = JSON.parse(text)
+  } catch {
+    throw new Error(`Failed to parse response: ${res.status}`)
   }
-  const json = await res.json()
+
+  if (!res.ok) {
+    throw new Error(json.message || `Request failed: ${res.status}`)
+  }
+
   return json.data
 }
 
