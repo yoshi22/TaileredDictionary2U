@@ -4,6 +4,7 @@ import type { LLMEnrichmentResponse } from '@td2u/shared-validations'
 import type { LLMProvider, EnrichmentInput, LLMConfig } from './types'
 import { LLMError } from './types'
 import { buildEnrichmentPrompt, extractJSON } from './utils'
+import { getPromptTemplate } from './prompts'
 import { withRetry } from './retry'
 
 const DEFAULT_CONFIG: LLMConfig = {
@@ -35,6 +36,10 @@ export class OpenAIProvider implements LLMProvider {
           const completion = await this.client.chat.completions.create({
             model: this.config.model,
             messages: [
+              {
+                role: 'system',
+                content: getPromptTemplate('system'),
+              },
               {
                 role: 'user',
                 content: prompt,
