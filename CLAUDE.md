@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important References
+
+- **TODO.md**: 現在のタスクリストと進捗状況。作業開始前に必ず確認してください。
+
 ## Project Overview
 
 TaileredDictionary2U (TD2U) is a personal vocabulary learning app with AI-powered enrichment and spaced repetition system (SRS).
