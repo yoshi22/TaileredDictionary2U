@@ -27,6 +27,8 @@ Content-Type: application/json
 | POST | `/api/entries` | Entry作成 |
 | PATCH | `/api/entries/[id]` | Entry更新 |
 | DELETE | `/api/entries/[id]` | Entry削除 |
+| POST | `/api/entries/import` | CSVインポート |
+| GET | `/api/entries/export` | CSVエクスポート |
 | **Enrichment** |||
 | POST | `/api/enrichment` | AI生成 |
 | **Review** |||
@@ -39,11 +41,13 @@ Content-Type: application/json
 | DELETE | `/api/decks/[id]` | Deck削除 |
 | **Stats** |||
 | GET | `/api/stats` | 統計情報取得 |
+| **Profile** |||
+| GET | `/api/profile` | プロフィール + Entitlement取得 |
+| PATCH | `/api/profile` | プロフィール更新 |
 | **Billing** |||
 | POST | `/api/billing/checkout` | Checkout Session作成 |
 | POST | `/api/billing/portal` | Customer Portal作成 |
-| GET | `/api/billing/credits` | クレジット残高取得 |
-| POST | `/api/billing/credits/purchase` | クレジット購入 |
+| POST | `/api/billing/credits/purchase` | クレジット購入Checkout |
 | **Webhooks** |||
 | POST | `/api/webhooks/stripe` | Stripe Webhook |
 
@@ -210,48 +214,71 @@ Entry削除。
 
 ---
 
+### Entries CSV Import/Export
+
+#### POST `/api/entries/import`
+
+CSVファイルからEntryを一括登録。
+
+**Request (multipart/form-data):**
+| フィールド | 型 | 必須 | 説明 |
+|-----------|----|------|------|
+| `file` | File | Yes | 最大5MB, 500行まで |
+| `deck_id` | string | No | 指定したDeckに紐付け |
+| `skip_duplicates` | boolean | No | 既存Term重複をスキップ（default: true） |
+
+**レスポンス例**
+```json
+{
+  "data": {
+    "total": 120,
+    "imported": 110,
+    "skipped": 5,
+    "failed": 5,
+    "errors": [
+      { "row": 10, "term": "foo", "message": "Deck not found" }
+    ]
+  }
+}
+```
+
+#### GET `/api/entries/export`
+
+EntryをCSV形式でエクスポート。`deck_id` クエリでフィルタ可。レスポンスは `text/csv` で、BOM付きUTF-8を返却。
+
+---
+
 ### Enrichment
 
 #### POST `/api/enrichment`
 
-AI生成を実行。使用量チェックあり。
+既存Entryに対してAI生成を実行。使用量チェックあり。
 
 **Request Body:**
 ```json
 {
-  "term": "SRS",
-  "context": "SRSを使って効率的に学習する方法について"
+  "entry_id": "uuid",
+  "force_regenerate": false
 }
 ```
 
 | フィールド | 型 | 必須 | 説明 |
 |-----------|-----|------|------|
-| `term` | string | Yes | 用語（1-200文字） |
-| `context` | string | No | 文脈（0-500文字） |
+| `entry_id` | string (uuid) | Yes | Enrichment対象Entry |
+| `force_regenerate` | boolean | No | 既存Enrichmentを上書きする場合にtrue |
 
 **Response: 200 OK**
 ```json
 {
   "data": {
-    "translation_ja": "間隔反復学習システム",
-    "translation_en": "Spaced Repetition System",
-    "summary": "SRSは記憶の定着を科学的に最適化する学習手法です。\n忘却曲線に基づいて復習タイミングを計算します。\nAnkiなどのツールで広く採用されています。",
-    "examples": [
-      "I use SRS to memorize vocabulary efficiently.",
-      "SRSアプリで毎日15分復習しています。"
-    ],
-    "related_terms": [
-      "spaced repetition",
-      "forgetting curve",
-      "Anki",
-      "flashcard"
-    ],
-    "reference_links": [
-      {
-        "title": "Spaced repetition - Wikipedia",
-        "url": "https://en.wikipedia.org/wiki/Spaced_repetition"
-      }
-    ]
+    "entry": {
+      "id": "uuid",
+      "term": "SRS",
+      "enrichment": { /* ... */ },
+      "updated_at": "2025-01-01T00:00:00Z"
+    },
+    "message": "Enrichment generated successfully",
+    "generated": true
   },
   "usage": {
     "used": 15,
@@ -428,7 +455,7 @@ AI生成を実行。使用量チェックあり。
     "due_entries": 15,
     "total_decks": 5,
     "reviews_today": 10,
-    "streak_days": 7,
+    "streak_days": 0,
     "plan": {
       "type": "plus",
       "generation_used": 45,
@@ -436,6 +463,40 @@ AI生成を実行。使用量チェックあり。
       "credit_balance": 50
     }
   }
+}
+```
+
+---
+
+### Profile
+
+#### GET `/api/profile`
+
+`profiles` と `entitlements` を結合して返却。
+
+```json
+{
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "display_name": "User",
+    "entitlement": {
+      "plan_type": "plus",
+      "monthly_generation_used": 10,
+      "monthly_generation_limit": 200,
+      "credit_balance": 30
+    }
+  }
+}
+```
+
+#### PATCH `/api/profile`
+
+`display_name` などを更新。
+
+```json
+{
+  "display_name": "New Name"
 }
 ```
 
@@ -482,43 +543,17 @@ Stripe Customer Portal Session を作成。
 }
 ```
 
-#### GET `/api/billing/credits`
-
-**Response: 200 OK**
-```json
-{
-  "data": {
-    "balance": 50,
-    "transactions": [
-      {
-        "id": "uuid",
-        "type": "purchase",
-        "amount": 100,
-        "balance_after": 100,
-        "created_at": "2025-01-01T00:00:00Z"
-      },
-      {
-        "id": "uuid",
-        "type": "consume",
-        "amount": -1,
-        "balance_after": 99,
-        "created_at": "2025-01-02T00:00:00Z"
-      }
-    ]
-  }
-}
-```
-
 #### POST `/api/billing/credits/purchase`
 
-クレジット購入用 Checkout Session を作成。
+Plusユーザー向けのクレジット購入。`credits` には `"50" | "100" | "250"` を指定し、該当するStripe PriceでCheckout Sessionを作成する。
 
-**Request Body:**
 ```json
 {
-  "package_id": "credits_100"
+  "credits": "100"
 }
 ```
+
+レスポンスは `checkout_url` と `session_id` を返却。成功後はWebhookでクレジット残高を更新する。
 
 ---
 
@@ -594,13 +629,17 @@ interface ApiError {
 3. それ以外は 429 エラー
 ```
 
-### API全体
+### API全体（Upstash Ratelimit実装）
 
-| エンドポイント | 制限 |
-|---------------|------|
-| 全API | 100 req/min per user |
-| `/api/enrichment` | 10 req/min per user |
-| `/api/webhooks/stripe` | 制限なし（IP制限で保護） |
+| エンドポイント | 制限 | 備考 |
+|---------------|------|------|
+| `POST /api/entries` | 50 req/時間 | Entry作成 |
+| `POST /api/enrichment` | 10 req/分 | AI生成 |
+| `POST /api/decks` | 20 req/時間 | Deck作成 |
+| `POST /api/billing/checkout` | 5 req/時間 | Checkout Session作成 |
+| `GET /api/entries/export` | 10 req/時間 | CSVエクスポート |
+| `POST /api/entries/import` | 3 req/時間 | CSVインポート |
+| `/api/webhooks/stripe` | 制限なし | IP制限で保護 |
 
 **Response Headers:**
 ```http
@@ -608,6 +647,17 @@ X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1704067200
 ```
+
+### 不正利用検知
+
+Upstash Redisを使用した不正利用検知システム:
+
+| 検知パターン | しきい値 | アクション |
+|-------------|---------|-----------|
+| Entry作成スパイク | 30件/10分 | Sentryアラート |
+| Enrichment連続呼び出し | 20回/5分 | Sentryアラート |
+| 長文字列繰り返し | 5回/時間 | Sentryアラート |
+| CSVインポートスパイク | 5回/時間 | Sentryアラート |
 
 ---
 

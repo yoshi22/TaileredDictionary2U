@@ -31,12 +31,44 @@ TD2Uは、新しい用語・フレーズ・文を登録すると、AIが自動�
 ### 必要条件
 
 - Node.js 20+
-- pnpm 8+
-- Supabase アカウント
+- pnpm 9+
+- Docker Desktop（ローカル開発用）
+- Supabase アカウント（本番用）
 - OpenAI API キー
-- Stripe アカウント (課金機能用)
+- Stripe アカウント（課金機能用）
+- Upstash アカウント（レート制限用、オプション）
 
-### 環境構築
+### ローカル開発環境（推奨）
+
+```bash
+# リポジトリクローン
+git clone https://github.com/yourname/td2u.git
+cd td2u
+
+# 依存関係インストール
+pnpm install
+
+# Docker Desktop を起動
+
+# ローカル Supabase を起動
+supabase start
+
+# 環境変数設定（supabase statusの出力を参照）
+cp apps/web/.env.example apps/web/.env.local
+
+# マイグレーション適用
+supabase db reset
+
+# 開発サーバー起動
+pnpm dev:web
+```
+
+**ローカルURL**:
+- アプリ: http://localhost:3000
+- Supabase Studio: http://127.0.0.1:54323
+- Mailpit（メールテスト）: http://127.0.0.1:54324
+
+### 本番環境構築
 
 ```bash
 # リポジトリクローン
@@ -65,6 +97,15 @@ OPENAI_API_KEY=sk-xxxxx
 STRIPE_SECRET_KEY=sk_test_xxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
+STRIPE_PLUS_PRICE_ID=price_xxxxx
+STRIPE_CREDIT_100_PRICE_ID=price_xxxxx
+
+# Upstash Redis (Rate Limiting - Optional)
+UPSTASH_REDIS_REST_URL=https://xxxxx.upstash.io
+UPSTASH_REDIS_REST_TOKEN=xxxxx
+
+# Sentry (Error Tracking - Optional)
+SENTRY_DSN=https://xxxxx@xxxxx.ingest.sentry.io/xxxxx
 
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000

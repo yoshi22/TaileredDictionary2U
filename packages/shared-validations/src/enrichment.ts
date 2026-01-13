@@ -29,6 +29,7 @@ export type EnrichmentInput = z.infer<typeof EnrichmentSchema>;
  */
 export const GenerateEnrichmentRequestSchema = z.object({
   entry_id: z.string().uuid(),
+  force_regenerate: z.boolean().optional().default(false),
 });
 
 export type GenerateEnrichmentRequest = z.infer<typeof GenerateEnrichmentRequestSchema>;

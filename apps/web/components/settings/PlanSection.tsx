@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui'
 import type { Entitlement } from '@td2u/shared-types'
 
@@ -8,7 +10,33 @@ interface PlanSectionProps {
 }
 
 export function PlanSection({ entitlement }: PlanSectionProps) {
+  const router = useRouter()
+  const [isLoadingPortal, setIsLoadingPortal] = useState(false)
   const isPro = entitlement.plan_type === 'plus'
+
+  const handleManageSubscription = async () => {
+    setIsLoadingPortal(true)
+    try {
+      const response = await fetch('/api/billing/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'Failed to open portal')
+      }
+
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.portal_url
+    } catch (error) {
+      console.error('Failed to open customer portal:', error)
+      alert('Failed to open subscription management. Please try again.')
+    } finally {
+      setIsLoadingPortal(false)
+    }
+  }
 
   return (
     <Card>
@@ -23,7 +51,7 @@ export function PlanSection({ entitlement }: PlanSectionProps) {
             </p>
             <p className="text-sm text-gray-600">
               {isPro
-                ? 'Unlimited generations and premium features'
+                ? '200 AI generations per month + credit purchases'
                 : `${entitlement.monthly_generation_limit} AI generations per month`}
             </p>
           </div>
@@ -38,11 +66,11 @@ export function PlanSection({ entitlement }: PlanSectionProps) {
           <div className="bg-gray-50 rounded-lg p-4">
             <h4 className="font-medium mb-2">Upgrade to Plus</h4>
             <ul className="text-sm text-gray-600 space-y-1 mb-4">
-              <li>- Unlimited AI generations</li>
+              <li>- 200 AI generations per month</li>
               <li>- Priority support</li>
               <li>- Purchase additional credits</li>
             </ul>
-            <Button onClick={() => alert('Stripe checkout coming soon!')}>
+            <Button onClick={() => router.push('/pricing')}>
               Upgrade Now
             </Button>
           </div>
@@ -51,9 +79,10 @@ export function PlanSection({ entitlement }: PlanSectionProps) {
         {isPro && entitlement.stripe_subscription_id && (
           <Button
             variant="secondary"
-            onClick={() => alert('Stripe customer portal coming soon!')}
+            onClick={handleManageSubscription}
+            disabled={isLoadingPortal}
           >
-            Manage Subscription
+            {isLoadingPortal ? 'Loading...' : 'Manage Subscription'}
           </Button>
         )}
       </CardContent>

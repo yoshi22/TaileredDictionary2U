@@ -6,7 +6,7 @@ export interface EnrichmentInput {
 }
 
 export interface LLMProvider {
-  generateEnrichment(input: EnrichmentInput): Promise<LLMEnrichmentResponse>
+  generateEnrichment(_input: EnrichmentInput): Promise<LLMEnrichmentResponse>
 }
 
 export interface LLMConfig {
@@ -26,12 +26,13 @@ export interface LLMResponse {
 }
 
 export class LLMError extends Error {
-  constructor(
-    message: string,
-    public code: string,
-    public retryable: boolean = false
-  ) {
+  public code: string
+  public retryable: boolean
+
+  constructor(message: string, code: string, retryable = false) {
     super(message)
     this.name = 'LLMError'
+    this.code = code
+    this.retryable = retryable
   }
 }

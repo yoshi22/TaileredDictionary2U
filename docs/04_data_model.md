@@ -228,8 +228,8 @@ CREATE TABLE entries (
     "reference_links": [
       {"title": "タイトル", "url": "https://..."}
     ],
-    "generated_at": "2025-01-01T00:00:00Z",
-    "model": "gpt-4o-mini"
+    "generated_at"?: "2025-01-01T00:00:00Z",
+    "model"?: "gpt-4o-mini"
   }
   */
 

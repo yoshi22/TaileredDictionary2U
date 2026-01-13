@@ -103,10 +103,15 @@ app/
 | エンドポイント | 役割 |
 |---------------|------|
 | `/api/entries` | Entry CRUD |
-| `/api/enrichment` | AI生成（LLM呼び出し） |
-| `/api/review` | SRS更新 |
+| `/api/enrichment` | AI生成（LLM呼び出し、entry_idを指定） |
+| `/api/entries/import` | CSVインポート（multipart form） |
+| `/api/entries/export` | CSVエクスポート |
+| `/api/review/due` | Due Entry取得 |
+| `/api/review/[id]` | SRS更新 |
+| `/api/profile` | プロフィール取得/更新 |
 | `/api/billing/checkout` | Stripe Checkout Session作成 |
 | `/api/billing/portal` | Stripe Customer Portal |
+| `/api/billing/credits/purchase` | クレジット購入Checkout |
 | `/api/webhooks/stripe` | Stripe Webhook受信 |
 
 ### 3. Supabase Integration
@@ -122,6 +127,12 @@ import { createServerClient } from '@supabase/ssr'
 import { createServerClient } from '@supabase/ssr'
 ```
 
+### 4. LLMプロンプト管理
+
+- `apps/web/lib/llm/prompts.ts` にシステム/ユーザープロンプトを定義し `getPromptTemplate()` で参照
+- Serverless環境でも確実に読み込めるようファイルI/Oではなく埋め込み文字列を利用
+- OpenAI呼び出し時は `response_format: { type: 'json_object' }` を指定し、Zodでバリデーション
+
 ---
 
 ## データフロー
@@ -132,28 +143,29 @@ import { createServerClient } from '@supabase/ssr'
 sequenceDiagram
     participant U as User
     participant C as Client
-    participant API as /api/enrichment
+    participant API as /api
     participant LLM as OpenAI
     participant DB as Supabase DB
 
-    U->>C: Term入力、AI生成クリック
-    C->>API: POST /api/enrichment
+    U->>C: Term/Context入力
+    C->>API: POST /api/entries
+    API->>DB: INSERT entries + init srs_data
+    DB-->>API: Entry ID
+    API-->>C: Entry作成完了
+    C-->>U: 詳細ページへ遷移
+
+    U->>C: 「AI生成」クリック
+    C->>API: POST /api/enrichment (entry_id, force_regenerate?)
     API->>DB: 使用量チェック (entitlements)
     alt 上限超過
-        API-->>C: 429 Rate Limit
-        C-->>U: アップグレード促進
+        API-->>C: 429 Rate Limit / クレジット促進
     else 上限内
         API->>LLM: Prompt送信
         LLM-->>API: Enrichment JSON
-        API->>DB: 使用量カウント更新
-        API-->>C: Enrichment返却
+        API->>DB: entries.enrichment更新 + 使用量更新
+        API-->>C: Enrichment結果
         C-->>U: プレビュー表示
     end
-
-    U->>C: 保存クリック
-    C->>DB: INSERT entries
-    DB-->>C: Entry作成完了
-    C-->>U: 詳細ページへ遷移
 ```
 
 ### 復習フロー
@@ -432,18 +444,18 @@ logger.info('Enrichment generated', { userId, term, duration: 1234 })
 ```json
 {
   "dependencies": {
-    "next": "^14.x",
-    "@supabase/supabase-js": "^2.x",
-    "@supabase/ssr": "^0.x",
-    "openai": "^4.x",
-    "stripe": "^14.x",
-    "zod": "^3.x",
-    "swr": "^2.x"
+    "next": "^14.2.21",
+    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/ssr": "^0.5.2",
+    "openai": "^4.77.0",
+    "stripe": "^17.4.0",
+    "zod": "^3.23.8",
+    "swr": "^2.2.5"
   },
   "devDependencies": {
-    "typescript": "^5.x",
-    "tailwindcss": "^3.x",
-    "@types/react": "^18.x"
+    "typescript": "^5.3.3",
+    "tailwindcss": "^3.4.17",
+    "@types/react": "^18.2.48"
   }
 }
 ```

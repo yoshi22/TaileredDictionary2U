@@ -36,7 +36,11 @@ export function useDueEntries(
 
   const { data, error, isLoading, mutate } = useSWR<DueEntriesResponse>(
     `/api/review/due?${params.toString()}`,
-    fetcher
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+    }
   )
 
   return {

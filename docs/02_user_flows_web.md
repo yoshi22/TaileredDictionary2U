@@ -60,11 +60,12 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    A[アクセス] --> B{ログイン状態?}
-    B -->|Yes| C[/dashboard へリダイレクト]
-    B -->|No| D[LP表示]
-    D --> E[CTAボタン]
+    A[アクセス] --> B[LP表示]
+    B --> C{ログイン状態?}
+    C -->|Yes| D[Headerでダッシュボード導線表示]
+    C -->|No| E[ログイン/サインアップ導線を表示]
     E --> F[/signup へ遷移]
+    D --> G[/dashboard へ遷移（CTAボタン）]
 ```
 
 **画面要件:**
@@ -201,11 +202,12 @@ flowchart TB
 - Term入力（必須、最大200文字）
 - Context入力（任意、最大500文字）
 - Deck選択（デフォルト: "Default"）
-- AI生成ボタン
-- 生成結果プレビュー
 - 保存/キャンセルボタン
+- 保存後にEntry詳細画面へ遷移（AI生成は詳細画面で実行）
 
 **Enrichment表示項目:**
+保存直後はAI情報が空のため、Entry詳細画面から生成をトリガーする。生成後は `EnrichmentPreview` コンポーネントで以下を表示する。
+
 ```
 <EnrichmentPreview>
   - 日本語訳
@@ -240,8 +242,9 @@ interface Enrichment {
 
 ### 5. Entry詳細 (`/entry/[id]`)
 
-**画面要件:**
-- Entry全情報表示
+-**画面要件:**
+- Entry全情報表示（Enrichmentは存在する場合のみ）
+- AI生成/再生成ボタン（上限チェック・クレジット消費）
 - 編集モード切替
 - 削除確認ダイアログ
 - Deck移動

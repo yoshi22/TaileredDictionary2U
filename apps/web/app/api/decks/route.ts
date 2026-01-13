@@ -5,9 +5,14 @@ import {
   createdResponse,
   handleApiError,
   errors,
+  withRateLimit,
+  getClientIdentifier,
 } from '@/lib/api'
 import { CreateDeckSchema } from '@td2u/shared-validations'
 import { NextRequest } from 'next/server'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/decks
@@ -42,6 +47,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const user = await getAuthUser()
+
+    // Rate limit check
+    const identifier = await getClientIdentifier(user.id)
+    await withRateLimit('deckCreate', identifier)
+
     const supabase = await createClient()
 
     const body = await request.json()

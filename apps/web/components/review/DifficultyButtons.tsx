@@ -3,7 +3,7 @@
 import type { SrsRating } from '@td2u/shared-types'
 
 interface DifficultyButtonsProps {
-  onSelect: (rating: SrsRating) => void
+  onSelect: (_rating: SrsRating) => void
   disabled?: boolean
 }
 

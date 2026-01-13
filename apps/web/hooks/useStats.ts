@@ -32,6 +32,7 @@ const fetcher = async (url: string): Promise<Stats> => {
 export function useStats() {
   const { data, error, isLoading, mutate } = useSWR<Stats>('/api/stats', fetcher, {
     revalidateOnFocus: false,
+    dedupingInterval: 10000,
   })
 
   return {

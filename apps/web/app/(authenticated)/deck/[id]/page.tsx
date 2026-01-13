@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import useSWR from 'swr'
 import {
@@ -12,8 +12,9 @@ import {
   Spinner,
 } from '@/components/ui'
 import { DeckForm } from '@/components/deck'
-import { EntryCard } from '@/components/entry'
+import { EntryCard, ExportButton, ImportModal } from '@/components/entry'
 import { useDeck } from '@/hooks/useDeck'
+import { useDecks } from '@/hooks/useDecks'
 import type { EntryWithSrs } from '@td2u/shared-types'
 
 const entriesFetcher = async (url: string) => {
@@ -28,13 +29,20 @@ export default function DeckDetailPage() {
   const id = typeof params.id === 'string' ? params.id : null
   const router = useRouter()
   const { deck, loading, error, mutate: mutateDeck } = useDeck(id)
+  const { decks } = useDecks()
   const [editing, setEditing] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
-  const { data: entries = [], isLoading: entriesLoading } = useSWR<
+  const { data: entries = [], isLoading: entriesLoading, mutate: mutateEntries } = useSWR<
     EntryWithSrs[]
   >(`/api/entries?deck_id=${id}&limit=50`, entriesFetcher)
+
+  const handleImportSuccess = useCallback(() => {
+    mutateEntries()
+    mutateDeck()
+  }, [mutateEntries, mutateDeck])
 
   const handleUpdate = async (data: { name: string; description: string }) => {
     const res = await fetch(`/api/decks/${id}`, {
@@ -167,17 +175,27 @@ export default function DeckDetailPage() {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-2">
         <Button onClick={() => router.push(`/entry/new?deck_id=${id}`)}>
-          Add Entry to Deck
+          Add Entry
         </Button>
         <Button
           variant="secondary"
           onClick={() => router.push(`/review?deck_id=${id}`)}
           disabled={deck.entry_count === 0}
         >
-          Review Deck
+          Review
         </Button>
+        <Button
+          variant="secondary"
+          onClick={() => setIsImportModalOpen(true)}
+        >
+          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          Import
+        </Button>
+        <ExportButton deckId={id ?? undefined} deckName={deck.name} variant="secondary" />
       </div>
 
       {/* Entries */}
@@ -199,6 +217,15 @@ export default function DeckDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={handleImportSuccess}
+        decks={decks}
+        defaultDeckId={id ?? undefined}
+      />
     </div>
   )
 }

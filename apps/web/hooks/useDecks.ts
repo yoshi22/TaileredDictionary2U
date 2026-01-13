@@ -23,7 +23,11 @@ const fetcher = async (url: string) => {
 export function useDecks(): UseDecksResult {
   const { data, error, isLoading, mutate } = useSWR<Deck[]>(
     '/api/decks',
-    fetcher
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 10000,
+    }
   )
 
   return {

@@ -26,6 +26,7 @@ export function Header({ user, onSignOut }: HeaderProps) {
 
   const authenticatedNavItems = [
     { href: '/dashboard', label: 'Dashboard' },
+    { href: '/entries', label: 'Entries' },
     { href: '/entry/new', label: 'New Entry' },
     { href: '/review', label: 'Review' },
     { href: '/decks', label: 'Decks' },

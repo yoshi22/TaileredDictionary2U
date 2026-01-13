@@ -1,5 +1,9 @@
 # 12. Mobile Plan
 
+> **Status:** 基盤実装完了 (2026-01-13)。`apps/mobile/` にExpoプロジェクト作成済み。手動設定（EAS, RevenueCat, App Store Connect, Play Console）は未完了。
+>
+> 詳細: `docs/development-logs/20260113-phase3.5-mobile-app-setup.md`
+
 ## 概要
 
 ### 技術スタック
@@ -551,18 +555,18 @@ eas submit --platform android
 
 ## 開発タイムライン
 
-### Phase 3.5: モバイル準備（2週間）
+### Phase 3.5: モバイル準備（2週間） - 実装状況更新 2026-01-13
 
-| タスク | 日数 |
-|--------|------|
-| Expoプロジェクト初期化 | 1 |
-| 共通パッケージ抽出 | 2 |
-| Supabase認証連携 | 2 |
-| 基本画面（ログイン、ダッシュボード） | 3 |
-| RevenueCat設定 | 2 |
-| IAP/Play Billing商品登録 | 1 |
-| TestFlightビルド | 1 |
-| 内部テスト | 2 |
+| タスク | 日数 | 状況 |
+|--------|------|------|
+| Expoプロジェクト初期化 | 1 | ✅ 完了 |
+| 共通パッケージ連携 | 2 | ✅ 完了 |
+| Supabase認証連携 | 2 | ✅ 完了（コード実装済み） |
+| 基本画面（ログイン、ダッシュボード、復習、設定） | 3 | ✅ 完了 |
+| RevenueCat設定 | 2 | ✅ コード完了（API Key設定要） |
+| IAP/Play Billing商品登録 | 1 | ⏳ 手動設定要 |
+| TestFlightビルド | 1 | ⏳ 手動設定要 |
+| 内部テスト | 2 | ⏳ 手動設定要 |
 
 ### Phase 4: モバイルMVP（3週間）
 

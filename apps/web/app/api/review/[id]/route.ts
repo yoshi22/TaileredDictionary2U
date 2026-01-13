@@ -4,6 +4,9 @@ import { getAuthUser, successResponse, handleApiError, errors } from '@/lib/api'
 import { SubmitReviewSchema } from '@td2u/shared-validations'
 import { SrsCalculator } from '@td2u/shared-srs'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 interface RouteParams {
   params: { id: string }
 }

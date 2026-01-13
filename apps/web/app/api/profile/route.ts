@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAuthUser, successResponse, handleApiError, errors } from '@/lib/api'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/profile
  * Get user profile with entitlement

@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import type { Enrichment } from '@td2u/shared-types'
+import { getSafeUrl } from '@td2u/shared-validations'
 
 interface EnrichmentPreviewProps {
   enrichment: Enrichment
@@ -90,18 +91,24 @@ export function EnrichmentPreview({
         <div>
           <h4 className="text-sm font-medium text-gray-900 mb-2">References</h4>
           <ul className="space-y-1">
-            {referenceLinks.map((link, index) => (
-              <li key={index}>
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary-600 hover:underline text-sm"
-                >
-                  {link.title}
-                </a>
-              </li>
-            ))}
+            {referenceLinks.map((link, index) => {
+              // Only render links with safe URLs (http/https)
+              const safeUrl = getSafeUrl(link.url)
+              if (!safeUrl) return null
+
+              return (
+                <li key={index}>
+                  <a
+                    href={safeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:underline text-sm"
+                  >
+                    {link.title}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import * as Sentry from '@sentry/nextjs'
 import { Button } from '@/components/ui'
 
 interface ErrorProps {
@@ -10,7 +11,18 @@ interface ErrorProps {
 
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
+    // Log to console for debugging
     console.error('Application error:', error)
+
+    // Capture error in Sentry
+    Sentry.captureException(error, {
+      tags: {
+        type: 'client_error',
+      },
+      extra: {
+        digest: error.digest,
+      },
+    })
   }, [error])
 
   return (

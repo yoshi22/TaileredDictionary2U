@@ -6,7 +6,7 @@ import type { Deck } from '@td2u/shared-types'
 interface DeckSelectProps {
   decks: Deck[]
   value: string | null
-  onChange: (value: string | null) => void
+  onChange: (_value: string | null) => void
   loading?: boolean
   error?: string
   disabled?: boolean

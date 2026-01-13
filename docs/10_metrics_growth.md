@@ -92,6 +92,8 @@
 
 ### イベント実装例
 
+> Note: 2026/01時点では `usage_logs` への書き込みと一部SWRフェッチのみ実装済み。PostHog送信やクライアントイベントは今後の実装対象。
+
 ```typescript
 // lib/analytics/events.ts
 

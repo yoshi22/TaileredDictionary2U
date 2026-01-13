@@ -9,6 +9,9 @@ import {
 } from '@/lib/api'
 import { UpdateEntrySchema } from '@td2u/shared-validations'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 interface RouteParams {
   params: { id: string }
 }

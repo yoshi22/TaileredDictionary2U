@@ -14,6 +14,8 @@
       └─────────────┘
 ```
 
+> 実装状況: shared-srs のVitest、shared-validations のバリデーションテスト、API Route統合テスト（12ファイル）、Playwright E2Eテスト（auth, entry-flow, review-flow）が実装済み。
+
 ### テスト種別
 
 | 種別 | 対象 | ツール | カバレッジ目標 |

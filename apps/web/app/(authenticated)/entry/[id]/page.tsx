@@ -24,7 +24,7 @@ export default function EntryDetailPage() {
   const { entry, loading, error, mutate } = useEntry(id)
   const [generating, setGenerating] = useState(false)
 
-  const handleGenerateEnrichment = async () => {
+  const handleGenerateEnrichment = async (forceRegenerate = false) => {
     if (!entry) return
 
     setGenerating(true)
@@ -32,7 +32,7 @@ export default function EntryDetailPage() {
       const res = await fetch('/api/enrichment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ entry_id: entry.id }),
+        body: JSON.stringify({ entry_id: entry.id, force_regenerate: forceRegenerate }),
       })
 
       if (res.ok) {
@@ -114,7 +114,7 @@ export default function EntryDetailPage() {
                   translations, examples, and related terms.
                 </p>
                 <Button
-                  onClick={handleGenerateEnrichment}
+                  onClick={() => handleGenerateEnrichment(false)}
                   loading={generating}
                   disabled={generating}
                 >

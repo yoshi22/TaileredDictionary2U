@@ -6,11 +6,17 @@ import {
   paginatedResponse,
   handleApiError,
   errors,
+  withRateLimit,
+  getClientIdentifier,
 } from '@/lib/api'
 import {
   CreateEntrySchema,
   GetEntriesQuerySchema,
 } from '@td2u/shared-validations'
+import { detectEntrySpike, detectLongTextAbuse } from '@/lib/security'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/entries
@@ -72,7 +78,14 @@ export async function GET(request: NextRequest) {
     }
 
     if (search) {
-      query = query.ilike('term', `%${search}%`)
+      // 拡張検索: term, context, enrichment内を検索
+      const searchPattern = `%${search}%`
+      query = query.or(
+        `term.ilike.${searchPattern},` +
+        `context.ilike.${searchPattern},` +
+        `enrichment->>translation_ja.ilike.${searchPattern},` +
+        `enrichment->>translation_en.ilike.${searchPattern}`
+      )
     }
 
     // ソート
@@ -138,6 +151,16 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const user = await getAuthUser()
+
+    // Rate limit check
+    const identifier = await getClientIdentifier(user.id)
+    await withRateLimit('entryCreate', identifier)
+
+    // Abuse detection (non-blocking)
+    detectEntrySpike(user.id).catch(() => {
+      // Ignore errors - abuse detection should not block request
+    })
+
     const supabase = await createClient()
 
     // リクエストボディをパース
@@ -149,6 +172,14 @@ export async function POST(request: NextRequest) {
     }
 
     const { term, context, deck_id } = result.data
+
+    // Long text abuse detection (non-blocking)
+    if (term.length > 180) {
+      detectLongTextAbuse(user.id, term.length, 200).catch(() => {})
+    }
+    if (context && context.length > 450) {
+      detectLongTextAbuse(user.id, context.length, 500).catch(() => {})
+    }
 
     // deck_idが指定されている場合、ユーザーのデッキか確認
     if (deck_id) {

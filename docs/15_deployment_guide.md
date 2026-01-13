@@ -14,10 +14,10 @@
 | 3.1 | Email/Password認証 | ✅ 完了 |
 | 3.2 | Google OAuth（任意） | ⏭️ スキップ |
 | 4 | Vercelプロジェクト作成 | ✅ 完了 |
-| 5 | Vercel環境変数設定 | ⏳ 未完了 |
-| 6 | デプロイ確認 | ⏳ 未完了 |
+| 5 | Vercel環境変数設定 | ✅ 完了 |
+| 6 | デプロイ確認 | ✅ 完了 |
 
-**最終更新:** 2025-01-10
+**最終更新:** 2026-01-12
 
 ---
 
@@ -177,10 +177,21 @@ Vercel Dashboard > プロジェクト > **Settings** > **Environment Variables**
 
 | Key | Value | Environment |
 |-----|-------|-------------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL | Production, Preview, Development |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key | Production, Preview, Development |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role key | Production, Preview, Development |
-| `OPENAI_API_KEY` | OpenAI APIキー | Production, Preview, Development |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL | All |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon key | All |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role key | All (Edge Functionで暗号化) |
+| `OPENAI_API_KEY` | OpenAI APIキー | All |
+| `STRIPE_SECRET_KEY` | Stripe Secret | All |
+| `STRIPE_WEBHOOK_SECRET` | Stripe Webhook署名 | Production / Preview |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe Publishable | All |
+| `STRIPE_PLUS_PRICE_ID` | PlusプランPrice ID | All |
+| `STRIPE_CREDIT_50_PRICE_ID` | 50クレジットPrice ID | All |
+| `STRIPE_CREDIT_100_PRICE_ID` | 100クレジットPrice ID | All |
+| `STRIPE_CREDIT_250_PRICE_ID` | 250クレジットPrice ID | All |
+| `NEXT_PUBLIC_APP_URL` | デプロイURL (例: https://td2u.vercel.app) | All |
+| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | Sentry DSN | All |
+| `SENTRY_AUTH_TOKEN` / `SENTRY_ORG` / `SENTRY_PROJECT` | Sentry CLI用 | Production |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | レート制限制御 | Production (Preview optional) |
 
 ### 5.2 OpenAI APIキー取得
 

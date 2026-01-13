@@ -12,3 +12,4 @@ export {
 } from './Card'
 export { Spinner, type SpinnerProps } from './Spinner'
 export { Skeleton } from './Skeleton'
+export { ConfirmDialog } from './ConfirmDialog'

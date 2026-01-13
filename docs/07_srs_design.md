@@ -29,7 +29,7 @@
 | 値 | 名前 | 意味 | 影響 |
 |----|------|------|------|
 | 0 | **Again** | 完全に忘れた | 間隔リセット |
-| 1 | **Hard** | 思い出せたが困難 | 間隔短縮 |
+| 1 | **Hard** | 思い出せたが困難 | 間隔を少し伸ばす（前回×1.2） |
 | 2 | **Good** | 普通に思い出せた | 標準進行 |
 | 3 | **Easy** | 簡単に思い出せた | 間隔延長 |
 
@@ -52,44 +52,36 @@
 #### Step 1: Ease Factor の更新
 
 ```
-if rating < 2:
-    # Again または Hard: EFは変更しない（ただし下限1.3）
-    new_ef = max(1.3, current_ef)
+if rating == 0:
+    new_ef = max(1.3, current_ef - 0.2)
 else:
-    # Good または Easy: EFを調整
-    new_ef = current_ef + (0.1 - (3 - rating) * (0.08 + (3 - rating) * 0.02))
-    new_ef = max(1.3, new_ef)  # 下限1.3
+    # rating 1-3 は SM-2 の式で調整
+    q = rating + 2
+    delta = 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02)
+    new_ef = clamp(current_ef + delta, 1.3, 2.5)
 ```
 
-**EF変化量:**
-| Rating | 変化量 |
-|--------|--------|
-| 0 (Again) | 変化なし |
-| 1 (Hard) | 変化なし |
-| 2 (Good) | +0.0 |
-| 3 (Easy) | +0.1 |
+Hard評価でもSM-2式を使ってわずかにEFを調整する点がオリジナルとの差分。
 
 #### Step 2: Interval の計算
 
 ```
-if rating < 2:
-    # Again または Hard: リセット
-    new_interval = 1  # 1日後
+if rating == 0:
+    new_interval = 1
     new_repetitions = 0
 else:
-    # Good または Easy
     new_repetitions = repetitions + 1
 
     if new_repetitions == 1:
-        new_interval = 1  # 初回: 1日
+        new_interval = 1
     elif new_repetitions == 2:
-        new_interval = 6  # 2回目: 6日
+        new_interval = 6
     else:
-        # 3回目以降: 前回間隔 × EF
         new_interval = round(current_interval * new_ef)
 
-    # Easy ボーナス
-    if rating == 3:
+    if rating == 1:
+        new_interval = max(1, round(new_interval * 1.2))
+    elif rating == 3:
         new_interval = round(new_interval * 1.3)
 ```
 

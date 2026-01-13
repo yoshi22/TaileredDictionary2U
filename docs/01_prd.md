@@ -26,14 +26,14 @@
 アクター: ユーザー
 前提条件: ログイン済み
 成功シナリオ:
-1. ユーザーが「新規登録」をクリック
+1. ユーザーが「新規Entry」をクリック
 2. Term（用語）を入力
 3. （任意）Context（前後の文脈）を入力
 4. （任意）Deckを選択
-5. 「AI生成」をクリック
-6. システムがEnrichmentを生成・表示
-7. ユーザーが内容を確認し「保存」
-8. Entryが作成され、SRSキューに追加
+5. 「保存」をクリックしてEntryを作成
+6. エントリー詳細画面で「AI生成」を押下
+7. システムがEnrichmentを生成してEntryに保存
+8. EntryのSRSデータが初期化され、復習キューに追加
 ```
 
 ### UC-2: 復習セッションを行う
@@ -140,8 +140,8 @@
 | ログイン | `/login` | サインイン |
 | サインアップ | `/signup` | 新規登録 |
 | ダッシュボード | `/dashboard` | Entry一覧、統計概要 |
-| Entry詳細 | `/entry/[id]` | 単一Entry表示・編集 |
-| 新規Entry | `/entry/new` | Entry作成+AI生成 |
+| Entry詳細 | `/entry/[id]` | 単一Entry表示・編集 / AI生成・再生成 |
+| 新規Entry | `/entry/new` | Term/Context入力 & 保存（AIは詳細画面で実行） |
 | 復習 | `/review` | SRS復習セッション |
 | Deck一覧 | `/decks` | Deck管理 |
 | Deck詳細 | `/deck/[id]` | Deck内Entry一覧 |

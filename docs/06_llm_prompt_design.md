@@ -28,9 +28,7 @@ Term（用語）と Context（文脈）から、以下のEnrichmentを生成す�
 
 ### メインプロンプト
 
-```
-prompts/enrichment.txt
-```
+アプリケーションコード内 (`apps/web/lib/llm/prompts.ts`) に埋め込みテンプレートとして定義している。
 
 ```text
 You are a language learning assistant that helps users understand and memorize new terms.
@@ -81,7 +79,9 @@ Generate the JSON response:
 
 ### システムプロンプト
 
-```text
+同じく `prompts.ts` で定義され、OpenAI Chat Completionsにそのまま渡す。
+
+```
 You are a precise language learning assistant. You MUST respond with valid JSON only. No markdown, no explanations, just the JSON object.
 ```
 
@@ -321,14 +321,17 @@ export function getLLMProvider(): LLMProvider {
 ### ユーティリティ
 
 ```typescript
-// lib/llm/utils.ts
+// lib/llm/prompts.ts
 
-import fs from 'fs'
-import path from 'path'
+export const PROMPTS = {
+  system: 'You are a precise language learning assistant...'
+  enrichment: 'You are a language learning assistant ...'
+} as const
 
-export function readPromptTemplate(name: string): string {
-  const filePath = path.join(process.cwd(), 'prompts', `${name}.txt`)
-  return fs.readFileSync(filePath, 'utf-8')
+export type PromptName = keyof typeof PROMPTS
+
+export function getPromptTemplate(name: PromptName): string {
+  return PROMPTS[name]
 }
 ```
 
@@ -340,13 +343,12 @@ export function readPromptTemplate(name: string): string {
 
 ```typescript
 // Route Handler での使用
-import { EnrichmentRequestSchema } from '@/lib/validations/enrichment'
+import { GenerateEnrichmentRequestSchema } from '@td2u/shared-validations'
 
 export async function POST(request: Request) {
   const body = await request.json()
 
-  // 入力バリデーション
-  const inputResult = EnrichmentRequestSchema.safeParse(body)
+  const inputResult = GenerateEnrichmentRequestSchema.safeParse(body)
   if (!inputResult.success) {
     return Response.json(
       { error: 'VALIDATION_ERROR', message: 'Invalid request', details: inputResult.error },
@@ -354,13 +356,20 @@ export async function POST(request: Request) {
     )
   }
 
-  const { term, context } = inputResult.data
+  const { entry_id, force_regenerate } = inputResult.data
+  const entry = await db.entries.findById(entry_id)
+  if (!entry) {
+    return Response.json({ error: 'NOT_FOUND', message: 'Entry not found' }, { status: 404 })
+  }
 
-  // LLM呼び出し
   const provider = getLLMProvider()
-  const enrichment = await provider.generateEnrichment({ term, context })
+  const enrichment = await provider.generateEnrichment({
+    term: entry.term,
+    context: entry.context ?? undefined,
+  })
 
-  return Response.json({ data: enrichment })
+  // ... entriesテーブルへ保存 + usage更新
+  return Response.json({ data: { entry: { ...entry, enrichment }, generated: true } })
 }
 ```
 
@@ -568,10 +577,11 @@ function containsSensitiveData(input: string): boolean {
 ## ファイル配置
 
 ```
-prompts/
-├── enrichment.txt          # メインプロンプト
-├── enrichment_v2.txt       # 改善版（A/Bテスト用）
-└── system.txt              # システムプロンプト
+apps/web/lib/llm/
+├── prompts.ts              # システム/ユーザープロンプトを埋め込み定義
+├── openai.ts               # OpenAI Provider実装
+├── retry.ts                # リトライ制御
+└── utils.ts               # プロンプト整形/JSON抽出
 ```
 
 ---

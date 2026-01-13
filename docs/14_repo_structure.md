@@ -7,22 +7,18 @@ Web → Mobile 展開を見据えた Turborepo ベースのモノレポ構成を
 ```
 td2u/
 ├── apps/
-│   ├── web/                    # Next.js Web アプリ
-│   └── mobile/                 # Expo モバイルアプリ（Phase 3.5〜）
+│   └── web/                    # Next.js Web アプリ
 ├── packages/
 │   ├── shared-types/           # TypeScript 型定義
 │   ├── shared-utils/           # 共通ユーティリティ
 │   ├── shared-srs/             # SRS計算ロジック
-│   ├── shared-validations/     # Zodスキーマ
-│   └── ui/                     # 共通UIコンポーネント（将来）
+│   └── shared-validations/     # Zodスキーマ
 ├── docs/                       # 設計ドキュメント
-├── prompts/                    # LLMプロンプトテンプレート
 ├── supabase/                   # Supabaseマイグレーション
-├── scripts/                    # 開発・運用スクリプト
-├── turbo.json
-├── package.json
+├── README.md / TODO.md / CLAUDE.md
+├── package.json / pnpm-lock.yaml
 ├── pnpm-workspace.yaml
-└── README.md
+└── turbo.json
 ```
 
 ---
@@ -123,9 +119,11 @@ apps/web/
 │   │   ├── server.ts         # サーバークライアント
 │   │   └── middleware.ts     # ミドルウェアクライアント
 │   ├── llm/
-│   │   ├── types.ts
+│   │   ├── prompts.ts       # 埋め込みテンプレート
 │   │   ├── openai.ts
-│   │   └── index.ts
+│   │   ├── retry.ts
+│   │   ├── utils.ts
+│   │   └── index.ts / types.ts
 │   ├── srs/
 │   │   └── index.ts          # shared-srs を re-export
 │   ├── billing/
@@ -154,44 +152,6 @@ apps/web/
 ├── tsconfig.json
 ├── vitest.config.ts
 ├── playwright.config.ts
-└── package.json
-```
-
-### apps/mobile/ (Expo) - Phase 3.5〜
-
-```
-apps/mobile/
-├── app/                      # Expo Router
-│   ├── (auth)/              # 認証必須
-│   │   ├── _layout.tsx
-│   │   ├── (tabs)/
-│   │   │   ├── _layout.tsx
-│   │   │   ├── index.tsx    # ダッシュボード
-│   │   │   ├── review.tsx
-│   │   │   └── settings.tsx
-│   │   ├── entry/
-│   │   │   ├── new.tsx
-│   │   │   └── [id].tsx
-│   │   └── deck/
-│   │       └── [id].tsx
-│   ├── (public)/            # 未認証
-│   │   ├── login.tsx
-│   │   ├── signup.tsx
-│   │   └── index.tsx        # ウェルカム
-│   └── _layout.tsx
-├── src/
-│   ├── components/
-│   ├── hooks/
-│   ├── lib/
-│   │   ├── supabase.ts
-│   │   ├── purchases.ts     # RevenueCat
-│   │   └── notifications.ts
-│   ├── theme/
-│   └── types/
-├── assets/
-├── app.config.ts
-├── eas.json
-├── tsconfig.json
 └── package.json
 ```
 
@@ -326,13 +286,15 @@ packages:
     "test": "turbo test",
     "type-check": "turbo type-check",
     "dev:web": "turbo dev --filter=web",
-    "dev:mobile": "turbo dev --filter=mobile",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {
-    "turbo": "^2.0.0"
+    "turbo": "^2.3.3"
   },
-  "packageManager": "pnpm@8.0.0"
+  "packageManager": "pnpm@9.15.2",
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
 ```
 
@@ -348,33 +310,33 @@ packages:
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest",
+    "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "@supabase/supabase-js": "^2.0.0",
-    "@supabase/ssr": "^0.1.0",
+    "next": "^14.2.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/ssr": "^0.5.2",
     "openai": "^4.0.0",
-    "stripe": "^14.0.0",
-    "zod": "^3.0.0",
-    "swr": "^2.0.0",
+    "stripe": "^17.4.0",
+    "zod": "^3.23.8",
+    "swr": "^2.2.5",
     "@td2u/shared-types": "workspace:*",
     "@td2u/shared-utils": "workspace:*",
     "@td2u/shared-srs": "workspace:*",
     "@td2u/shared-validations": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "tailwindcss": "^3.0.0",
-    "@types/react": "^18.0.0",
-    "vitest": "^1.0.0",
-    "@playwright/test": "^1.40.0",
-    "eslint": "^8.0.0",
-    "eslint-config-next": "^14.0.0"
+    "typescript": "^5.3.3",
+    "tailwindcss": "^3.4.17",
+    "@types/react": "^18.2.48",
+    "vitest": "^2.1.8",
+    "@playwright/test": "^1.49.1",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.21"
   }
 }
 ```

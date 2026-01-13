@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { getAuthUser, successResponse, handleApiError, errors } from '@/lib/api'
 import { GetDueEntriesQuerySchema } from '@td2u/shared-validations'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 /**
  * GET /api/review/due
  * Get entries due for review

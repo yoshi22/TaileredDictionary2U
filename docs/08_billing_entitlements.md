@@ -137,35 +137,18 @@ export async function checkGenerationEntitlement(
   }
 }
 
-export async function consumeGeneration(
-  supabase: ReturnType<typeof createServerClient>,
-  userId: string,
-  useCredit: boolean
-): Promise<void> {
-  if (useCredit) {
-    // クレジット消費
-    const { data: ent } = await supabase
-      .from('entitlements')
-      .select('credit_balance')
-      .eq('user_id', userId)
-      .single()
+export async function consumeGeneration(userId: string): Promise<void> {
+  const supabase = createServiceRoleClient()
+  const { data, error } = await supabase
+    .rpc('consume_generation_atomic', { p_user_id: userId })
+    .single()
 
-    await supabase.from('entitlements').update({
-      credit_balance: ent!.credit_balance - 1,
-      updated_at: new Date().toISOString()
-    }).eq('user_id', userId)
+  if (error) {
+    throw new Error(error.message)
+  }
 
-    // クレジット取引記録
-    await supabase.from('credit_transactions').insert({
-      user_id: userId,
-      transaction_type: 'consume',
-      amount: -1,
-      balance_after: ent!.credit_balance - 1,
-      description: 'AI generation'
-    })
-  } else {
-    // 月間使用量カウント
-    await supabase.rpc('increment_generation_used', { p_user_id: userId })
+  if (!data?.success) {
+    throw new Error(data?.message || 'Generation limit exceeded')
   }
 }
 ```
@@ -173,15 +156,61 @@ export async function consumeGeneration(
 ### RPC関数（Supabase）
 
 ```sql
--- 月間使用量のアトミックなインクリメント
-CREATE OR REPLACE FUNCTION increment_generation_used(p_user_id UUID)
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION consume_generation_atomic(p_user_id UUID)
+RETURNS TABLE (
+  success boolean,
+  source text,
+  remaining_monthly int,
+  remaining_credits int,
+  message text
+) AS $$
+DECLARE
+  ent RECORD;
 BEGIN
-  UPDATE entitlements
-  SET
-    monthly_generation_used = monthly_generation_used + 1,
-    updated_at = NOW()
-  WHERE user_id = p_user_id;
+  SELECT * INTO ent
+  FROM entitlements
+  WHERE user_id = p_user_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    success := false;
+    message := 'Entitlement not found';
+    RETURN NEXT;
+    RETURN;
+  END IF;
+
+  IF ent.monthly_generation_used < ent.monthly_generation_limit THEN
+    UPDATE entitlements
+    SET monthly_generation_used = monthly_generation_used + 1,
+        updated_at = NOW()
+    WHERE user_id = p_user_id;
+    success := true;
+    source := 'monthly';
+    remaining_monthly := ent.monthly_generation_limit - ent.monthly_generation_used - 1;
+    remaining_credits := ent.credit_balance;
+    RETURN NEXT;
+    RETURN;
+  ELSIF ent.plan_type = 'plus' AND ent.credit_balance > 0 THEN
+    UPDATE entitlements
+    SET credit_balance = ent.credit_balance - 1,
+        updated_at = NOW()
+    WHERE user_id = p_user_id;
+    INSERT INTO credit_transactions (user_id, transaction_type, amount, balance_after, description)
+    VALUES (p_user_id, 'consume', -1, ent.credit_balance - 1, 'AI generation');
+    success := true;
+    source := 'credit';
+    remaining_monthly := 0;
+    remaining_credits := ent.credit_balance - 1;
+    RETURN NEXT;
+    RETURN;
+  ELSE
+    success := false;
+    message := 'Generation limit exceeded';
+    remaining_monthly := 0;
+    remaining_credits := ent.credit_balance;
+    RETURN NEXT;
+    RETURN;
+  END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```

@@ -17,7 +17,7 @@ interface FormErrors {
 
 interface DeckFormProps {
   deck?: Deck
-  onSubmit: (data: FormData) => Promise<void>
+  onSubmit: (_data: FormData) => Promise<void>
   onCancel?: () => void
   submitLabel?: string
 }
